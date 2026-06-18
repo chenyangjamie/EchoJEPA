@@ -37,19 +37,21 @@ EchoJEPA demonstrates anatomical localization, focusing on the mitral valve leaf
 Our trained EchoJEPA checkpoints are available for download [here](https://drive.google.com/drive/folders/1RFEXMe8TTcABMBz4H_qtiLB43K9jD_lf?usp=sharing). We provide two main variants:
 
 1. **EchoJEPA (V-JEPA 2)** — initialized from the pretrained V-JEPA 2 weights (VideoMix22M: SSv2, Kinetics, HowTo100M, YT1B, and ImageNet), which we have found works much better for downstream functional tasks compared to training on MIMIC from scratch.
-2. **EchoJEPA (V-JEPA 2.1)** — enhances the original V-JEPA 2 model for dense prediction tasks. These models should be better for segmentation and interpretability.
+2. **EchoJEPA (V-JEPA 2.1)** — based on [V-JEPA 2.1](https://arxiv.org/abs/2603.14482), which adds dense predictive supervision over all tokens (not just masked ones) plus deep self-supervision across multiple encoder layers. This produces spatially structured, temporally consistent features that are better suited for dense prediction tasks such as segmentation, tracking, depth estimation, and interpretability (e.g., attention map visualization).
+
+Checkpoint naming: `pt` = pretraining epochs, `c` = cooldown/annealing epochs (which help with convergence and resolution scaling).
 
 ```
 echojepa/checkpoints/
   ├── vitl-vmix22m-pt220-c55.pt                (4.8 GB)  ViT-L, initialized from V-JEPA 2 (VM22M)
   ├── vitl-scratch-pt-210-c25.pt               (4.8 GB)  ViT-L, trained from scratch
   └── vjepa 2.1/
-      ├── vjepa21_vitl_mimic_e100.pt           (4.8 GB)  ViT-L (300M params)
-      ├── vjepa21_vitl_mimic_e117.pt           (4.8 GB)  ViT-L (300M params)
-      └── vjepa2_1_vitb_mimic_p169_c60.pt      (1.5 GB)  ViT-B (80M params)
+      ├── vjepa21_vitl_mimic_pt100.pt          (4.8 GB)  ViT-L (300M params)
+      ├── vjepa21_vitl_mimic_pt117.pt          (4.8 GB)  ViT-L (300M params)
+      └── vjepa2_1_vitb_mimic_pt169_c60.pt     (1.5 GB)  ViT-B (80M params)
 ```
 
-We recommend `vitl-vmix22m-pt220-c55.pt` as the default starting point for functional tasks (LVEF, RVSP, view classification), and the V-JEPA 2.1 checkpoints for dense prediction tasks (segmentation, interpretability).
+We recommend `vitl-vmix22m-pt220-c55.pt` as the default starting point for functional tasks (LVEF, RVSP, view classification), and the V-JEPA 2.1 checkpoints for dense prediction tasks (segmentation, tracking, interpretability).
 
 ### Setup
 
