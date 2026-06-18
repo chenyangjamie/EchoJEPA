@@ -32,6 +32,25 @@ EchoJEPA demonstrates anatomical localization, focusing on the mitral valve leaf
 
 ## Getting Started
 
+### EchoJEPA Checkpoints
+
+Our trained EchoJEPA checkpoints are available for download [here](https://drive.google.com/drive/folders/1RFEXMe8TTcABMBz4H_qtiLB43K9jD_lf?usp=sharing). We provide two main variants:
+
+1. **EchoJEPA (V-JEPA 2)** — initialized from the natural video checkpoint (Kinetics), which we have found works much better for downstream functional tasks compared to training on MIMIC from scratch.
+2. **EchoJEPA (V-JEPA 2.1)** — enhances the original V-JEPA 2 model for dense prediction tasks. These models should be better for segmentation and interpretability.
+
+```
+echojepa/checkpoints/
+  ├── vitl-kinetics-pt220-an55.pt              (4.8 GB)  ViT-L, Kinetics-initialized
+  ├── vitl-scratch-pt-210-an25.pt              (4.8 GB)  ViT-L, trained from scratch
+  └── vjepa 2.1/
+      ├── vjepa21_vitl_mimic_e100.pt           (4.8 GB)  ViT-L (300M params)
+      ├── vjepa21_vitl_mimic_e117.pt           (4.8 GB)  ViT-L (300M params)
+      └── vjepa2_1_vitb_mimic_p169_c60.pt      (1.5 GB)  ViT-B (80M params)
+```
+
+We recommend `vitl-kinetics-pt220-an55.pt` as the default starting point for functional tasks (LVEF, RVSP, view classification), and the V-JEPA 2.1 checkpoints for dense prediction tasks (segmentation, interpretability).
+
 ### Setup
 
 ```
@@ -71,66 +90,6 @@ mimic-echo-224px/files/p10/p10002221/s94106955/94106955_0007.mp4 0
 mimic-echo-224px/files/p10/p10002221/s94106955/94106955_0008.mp4 0
 mimic-echo-224px/files/p10/p10002221/s94106955/94106955_0009.mp4 0
 ```
-
-#### Pretrained Checkpoints
-
-Since we are doing self-supervised pre-training, all the video labels are set to zero. You can begin pretraining from any of the pre-trained V-JEPA models below:
-<table>
-  <tr>
-    <th colspan="1">Model</th>
-    <th colspan="1">#Parameters</th>
-    <th colspan="1">Resolution</th>
-    <th colspan="1">Download Link</th>
-    <th colspan="1">Pretraining Config</th>
-  </tr>
-  <tr>
-    <td>ViT-L/16</td>
-    <td>300M</td>
-    <td>256</td>
-    <td><a href="https://dl.fbaipublicfiles.com/vjepa2/vitl.pt">checkpoint</a></td>
-    <td><a href="configs/train/vitl16">configs</a></td>
-  </tr>
-  <tr>
-    <td>ViT-H/16</td>
-    <td>600M</td>
-    <td>256</td>
-    <td><a href="https://dl.fbaipublicfiles.com/vjepa2/vith.pt">checkpoint</a></td>
-    <td><a href="configs/train/vith16/">configs</a></td>
-  </tr>
-  <tr>
-    <td>ViT-g/16</td>
-    <td>1B</td>
-    <td>256</td>
-    <td><a href="https://dl.fbaipublicfiles.com/vjepa2/vitg.pt">checkpoint</a></td>
-    <td><a href="configs/train/vitg16">configs</a></td>
-  </tr>
-  <tr>
-    <td>ViT-g/16<sub>384</sub></td>
-    <td>1B</td>
-    <td>384</td>
-    <td><a href="https://dl.fbaipublicfiles.com/vjepa2/vitg-384.pt">checkpoint</a></td>
-    <td><a href="configs/train/vitg16">configs</a></td>
-  </tr>
-</table>
-
-#### EchoJEPA Checkpoints
-
-Our trained EchoJEPA checkpoints are available for download [here](https://drive.google.com/drive/folders/1RFEXMe8TTcABMBz4H_qtiLB43K9jD_lf?usp=sharing). We provide two main variants:
-
-1. **EchoJEPA (V-JEPA 2)** — initialized from the natural video checkpoint (Kinetics), which we have found works much better for downstream functional tasks compared to training on MIMIC from scratch.
-2. **EchoJEPA (V-JEPA 2.1)** — enhances the original V-JEPA 2 model for dense prediction tasks. These models should be better for segmentation and interpretability.
-
-```
-echojepa/checkpoints/
-  ├── vitl-kinetics-pt220-an55.pt              (4.8 GB)  ViT-L, Kinetics-initialized
-  ├── vitl-scratch-pt-210-an25.pt              (4.8 GB)  ViT-L, trained from scratch
-  └── vjepa 2.1/
-      ├── vjepa21_vitl_mimic_e100.pt           (4.8 GB)  ViT-L (300M params)
-      ├── vjepa21_vitl_mimic_e117.pt           (4.8 GB)  ViT-L (300M params)
-      └── vjepa2_1_vitb_mimic_p169_c60.pt      (1.5 GB)  ViT-B (80M params)
-```
-
-We recommend `vitl-kinetics-pt220-an55.pt` as the default starting point for functional tasks (LVEF, RVSP, view classification), and the V-JEPA 2.1 checkpoints for dense prediction tasks (segmentation, interpretability).
 
 We keep the pretraining configuration mostly the same as in V-JEPA 2, but adjust some of the sampling and augmentation parameters for echocardiography:
 ```
@@ -415,6 +374,51 @@ The majority of V-JEPA 2 is licensed under MIT, however portions of the project 
 [src/datasets/utils/worker_init_fn.py](src/datasets/utils/worker_init_fn.py)<br>
 
 are licensed under the Apache 2.0 license.
+
+
+## V-JEPA 2 Initialization Weights
+
+These are the original V-JEPA 2 checkpoints (pretrained on natural video, **not** echocardiography) from which our EchoJEPA models were initialized. They are provided by Meta and can be used as a starting point if you wish to pretrain EchoJEPA from scratch on your own data.
+
+<table>
+  <tr>
+    <th colspan="1">Model</th>
+    <th colspan="1">#Parameters</th>
+    <th colspan="1">Resolution</th>
+    <th colspan="1">Download Link</th>
+    <th colspan="1">Pretraining Config</th>
+  </tr>
+  <tr>
+    <td>ViT-L/16</td>
+    <td>300M</td>
+    <td>256</td>
+    <td><a href="https://dl.fbaipublicfiles.com/vjepa2/vitl.pt">checkpoint</a></td>
+    <td><a href="configs/train/vitl16">configs</a></td>
+  </tr>
+  <tr>
+    <td>ViT-H/16</td>
+    <td>600M</td>
+    <td>256</td>
+    <td><a href="https://dl.fbaipublicfiles.com/vjepa2/vith.pt">checkpoint</a></td>
+    <td><a href="configs/train/vith16/">configs</a></td>
+  </tr>
+  <tr>
+    <td>ViT-g/16</td>
+    <td>1B</td>
+    <td>256</td>
+    <td><a href="https://dl.fbaipublicfiles.com/vjepa2/vitg.pt">checkpoint</a></td>
+    <td><a href="configs/train/vitg16">configs</a></td>
+  </tr>
+  <tr>
+    <td>ViT-g/16<sub>384</sub></td>
+    <td>1B</td>
+    <td>384</td>
+    <td><a href="https://dl.fbaipublicfiles.com/vjepa2/vitg-384.pt">checkpoint</a></td>
+    <td><a href="configs/train/vitg16">configs</a></td>
+  </tr>
+</table>
+
+Set `optimization.checkpoint` in your pretraining config to the downloaded checkpoint path. Since we are doing self-supervised pre-training, all the video labels are set to zero.
 
 
 ## Citation
