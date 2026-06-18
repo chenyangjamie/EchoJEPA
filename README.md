@@ -113,6 +113,25 @@ Since we are doing self-supervised pre-training, all the video labels are set to
   </tr>
 </table>
 
+#### EchoJEPA Checkpoints
+
+Our trained EchoJEPA checkpoints are available for download [here](https://drive.google.com/drive/folders/1RFEXMe8TTcABMBz4H_qtiLB43K9jD_lf?usp=sharing). We provide two main variants:
+
+1. **EchoJEPA (V-JEPA 2)** — initialized from the natural video checkpoint (Kinetics), which we have found works much better for downstream functional tasks compared to training on MIMIC from scratch.
+2. **EchoJEPA (V-JEPA 2.1)** — enhances the original V-JEPA 2 model for dense prediction tasks. These models should be better for segmentation and interpretability.
+
+```
+echojepa/checkpoints/
+  ├── vitl-kinetics-pt220-an55.pt              (4.8 GB)  ViT-L, Kinetics-initialized
+  ├── vitl-scratch-pt-210-an25.pt              (4.8 GB)  ViT-L, trained from scratch
+  └── vjepa 2.1/
+      ├── vjepa21_vitl_mimic_e100.pt           (4.8 GB)  ViT-L (300M params)
+      ├── vjepa21_vitl_mimic_e117.pt           (4.8 GB)  ViT-L (300M params)
+      └── vjepa2_1_vitb_mimic_p169_c60.pt      (1.5 GB)  ViT-B (80M params)
+```
+
+We recommend `vitl-kinetics-pt220-an55.pt` as the default starting point for functional tasks (LVEF, RVSP, view classification), and the V-JEPA 2.1 checkpoints for dense prediction tasks (segmentation, interpretability).
+
 We keep the pretraining configuration mostly the same as in V-JEPA 2, but adjust some of the sampling and augmentation parameters for echocardiography:
 ```
 app: vjepa
