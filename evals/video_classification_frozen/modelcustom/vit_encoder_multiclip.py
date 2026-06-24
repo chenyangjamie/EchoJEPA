@@ -59,6 +59,22 @@ def init_module(
     # --
     pretrained_dict = {k.replace("module.", ""): v for k, v in pretrained_dict.items()}
     pretrained_dict = {k.replace("backbone.", ""): v for k, v in pretrained_dict.items()}
+
+    # Optional V-JEPA 2.1 support: 2.1 encoders have no single final `norm`.
+    # Their deep self-supervision head stores per-level norms as
+    # `norms_block.{0..3}` (3 intermediate blocks + the output layer). Opt in by
+    # setting `final_norm_key` (e.g. `norms_block.3`) in the encoder config to
+    # load that output-layer norm as the encoder's final `norm`; otherwise it
+    # would be left at default init. This is a no-op for V-JEPA 2 checkpoints,
+    # which already contain `norm.*`.
+    final_norm_key = enc_kwargs.get("final_norm_key")
+    if final_norm_key is not None:
+        for suffix in ("weight", "bias"):
+            src, dst = f"{final_norm_key}.{suffix}", f"norm.{suffix}"
+            if dst not in pretrained_dict and src in pretrained_dict:
+                pretrained_dict[dst] = pretrained_dict[src]
+                logger.info(f"[vjepa21] mapped checkpoint '{src}' -> model '{dst}'")
+
     for k, v in model.state_dict().items():
         if k not in pretrained_dict:
             logger.info(f'key "{k}" could not be found in loaded state dict')

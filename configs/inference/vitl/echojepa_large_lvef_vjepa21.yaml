@@ -1,8 +1,8 @@
-# INFERENCE CONFIG
+# INFERENCE CONFIG -- backbone swapped to V-JEPA 2.1 (vjepa21_vitl_mimic_pt117)
 app: vjepa
 cpus_per_task: 32
 # Output folder for inference logs (separate from training to avoid overwrite)
-folder: /raid2/nextgen/new_projects/EchoJEPA/experiments/echonet_lvef_inference
+folder: /raid2/nextgen/new_projects/EchoJEPA/experiments/echonet_lvef_vjepa21_inference
 mem_per_gpu: 80G
 nodes: 1
 tasks_per_node: 8
@@ -12,15 +12,15 @@ num_workers: 8
 eval_name: video_classification_frozen
 resume_checkpoint: true # <--- CHANGE THIS TO TRUE, OTHERWISE RANDOM WEIGHTS
 # Use a new tag for inference results
-tag: rvsf-lvef-a4c-inference-test-set
+tag: echojepa-vitl-vjepa21-lvef-inference-test-set
 
 # --- CRITICAL INFERENCE SETTINGS ---
 val_only: true
 # Path where the predictions CSV will be saved
-predictions_save_path: /raid2/nextgen/new_projects/EchoJEPA/experiments/echonet_lvef_inference/test_predictions.csv
+predictions_save_path: /raid2/nextgen/new_projects/EchoJEPA/experiments/echonet_lvef_vjepa21_inference/test_predictions.csv
 
 # POINT THIS TO YOUR TRAINED PROBE CHECKPOINT
-probe_checkpoint: /raid2/nextgen/new_projects/EchoJEPA/experiments/echonet_lvef/video_classification_frozen/echojepa-vitl-echonet-dynamic-lvef/best.pt
+probe_checkpoint: /raid2/nextgen/new_projects/EchoJEPA/experiments/echonet_lvef_vjepa21/video_classification_frozen/echojepa-vitl-vjepa21-echonet-dynamic-lvef/best.pt
 
 experiment:
   classifier:
@@ -47,7 +47,7 @@ experiment:
   optimization:
     # You can increase batch size for inference since gradients are off
     batch_size: 32
-    
+
     # Zero out learning rates for safety (though val_only prevents updates anyway)
     multihead_kwargs:
     - final_lr: 0.0
@@ -62,11 +62,15 @@ experiment:
     use_pos_embed: false
 
 model_kwargs:
-  checkpoint: /raid2/nextgen/new_projects/EchoJEPA/checkpoints/vitl-vmix22m-pt220-c55.pt
+  checkpoint: "/raid2/nextgen/new_projects/EchoJEPA/checkpoints/vjepa 2.1/vjepa21_vitl_mimic_pt117.pt"
   module_name: evals.video_classification_frozen.modelcustom.vit_encoder_multiclip
   pretrain_kwargs:
     encoder:
       checkpoint_key: target_encoder
+      # Must match the backbone loading used during probe training. The current
+      # probe was trained with the default final norm, so this stays disabled.
+      # Uncomment ONLY if the probe was (re)trained with final_norm_key enabled.
+      # final_norm_key: norms_block.3
       img_temporal_dim_size: null
       model_name: vit_large
       patch_size: 16
