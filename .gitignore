@@ -19,3 +19,14 @@ model_data/
 *.zip
 *.tar
 *.gz
+
+# Build artifacts
+*.egg-info/
+
+# Logs
+*.log
+
+# Large experiment outputs, checkpoints, and dataset symlinks
+experiments/
+checkpoints/
+EchoNet_Dynamic/
